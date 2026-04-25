@@ -1,0 +1,117 @@
+"use client"; // 1. Indica que es un componente de cliente
+import { useState, useEffect } from "react"; // 2. Importa el hook useState
+import  guardarProducto  from "../services/productosService";
+import { collection, query, onSnapshot } from "firebase/firestore";
+import { db } from "@/app/firebase"; // Asegúrate de tener tu configuración de Firebase aquí
+
+export default function Inventario({bazar, decoracion, jugueteria, libreria, destilados}) {
+    // 1. PRIMERO declaramos todos los estados
+    const [categoria, setCategoria] = useState("bazar");
+    const [stock, setStock] = useState("");
+    const [punto_reposicion, setPunto] = useState("");
+    const [precio, setPrecio] = useState("Bs ");
+    const [nombre, setNombre] = useState("");
+    
+    // AQUÍ DEBE ESTAR DECLARADO 'productosFirebase'
+    const [productosFirebase, setProductosFirebase] = useState([]);
+
+    // 2. SEGUNDO dejamos el useEffect para cargar los datos
+    useEffect(() => {
+        const q = query(collection(db, "productos"));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const lista = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            setProductosFirebase(lista);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    // 3. TERCERO (¡Esto va abajo de todo lo anterior!): Creamos el diccionario de datos
+    const datos = {
+        bazar: [...bazar, ...productosFirebase.filter(p => p.categoria === 'bazar')],
+        decoracion: [...decoracion, ...productosFirebase.filter(p => p.categoria === 'decoracion')],
+        jugueteria: [...jugueteria, ...productosFirebase.filter(p => p.categoria === 'jugueteria')],
+        libreria: [...libreria, ...productosFirebase.filter(p => p.categoria === 'libreria')],
+        destilados: [...destilados, ...productosFirebase.filter(p => p.categoria === 'destilados')]
+    };
+
+    console.log(bazar);
+    console.log(decoracion);
+    return(
+       
+        <div className="p-6 border-amber-100 rounded-xl shadow-md mt-4 hover:scale-[1.02] transition-all duration-300">
+           
+            <h2 className="text-2xl font-bold mb-4 text-gray-500 text-center">Inventario</h2>
+            <div className="flex justify-center mb-8">
+                <select 
+                    value={categoria} 
+                    onChange={(e) => setCategoria(e.target.value)}
+                    className="w-full mb-4 p-2 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400 bg-white text-gray-700"
+                >
+                    <option value="bazar">Bazar</option>
+                    <option value="decoracion">Decoración</option>
+                    <option value="jugueteria">Juguetería</option>
+                    <option value="libreria">Librería</option>
+                    <option value="destilados">Destilados</option>
+                </select>
+                <input type="text" value={nombre} onChange={e=>setNombre(e.target.value)} placeholder="Nombre producto..." className="w-full mb-4 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400 text-gray-500"/>
+                <input type="text" value={precio} onChange={e=>setPrecio(e.target.value)}  placeholder="Precio..." className="w-full mb-4 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400 text-gray-500"/>
+                <input type="number" value={punto_reposicion} onChange={e=> setPunto(e.target.value)} placeholder="Punto de reposición..." className="w-full mb-4 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400 text-gray-500"/>
+                <input type="number" value={stock} onChange={e => setStock(e.target.value)} placeholder="Stock..." className="w-full mb-4 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400 text-gray-500"/>
+                
+                <button
+                    onClick={() => guardarProducto({
+                        nombre: nombre,
+                        precio: precio,
+                        punto_reposicion: punto_reposicion,
+                        stock: stock,
+                        categoria: categoria
+                    })}
+                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors duration-300 cursor-pointer"
+                >
+                    Guardar producto
+                </button>
+
+
+            </div>
+            <div className="flex flex-wrap justify-center gap-4 mb-8 border-b pb-4">
+                {Object.keys(datos).map((cat)=>(
+                    <button
+                        key={cat}
+                        onClick={()=> setCategoria(cat)}
+                        className={`text-sm font-semibold px-4 py-2 rounded-lg border-none uppercase transition-colors duration-300
+                            ${categoria === cat ? "text-cyan-400 font-bold" : "text-black/40 hover:text-cyan-400 "}
+                        `}
+                    >{cat}</button>
+                ))}
+            </div>
+            <div className="justify-between grid grid-cols-4 gap-4 pb-2 border-b items-center">
+                        <h6 className="text-lg font-semibold mb-2 text-black/50">Nombre</h6>
+                        <h6 className="text-lg font-semibold mb-2 text-black/50">Precio</h6>
+                        <h6 className="text-lg font-semibold mb-2 text-black/50">Punto reposición</h6>
+                        <h6 className="text-lg font-semibold mb-2 text-black/50">Stock</h6>
+                    </div>
+            <div>
+                {datos[categoria]?.map((p)=>(
+                    
+                    <div key={p.id} className="justify-between items-center p-3  rounded-lg hover:bg-amber-100 transition-colors">
+                        <div className="hover:text-cyan-50 justify-center grid grid-cols-4 gap-4 items-center">
+                            <span className="text-gray-500"> {p.nombre} </span>
+                            <span className="text-gray-500">{p.precio}</span>
+                            <span className="text-sm text-gray-500"> {p.punto_reposicion} </span>
+                            <span className="text-sm text-gray-500"> {p.stock} </span>
+                        </div>
+                    </div>
+                ))}
+            </div>
+            {/* Nota de salud si es destilados */}
+            {categoria === 'destilados' && (
+                <p className="text-[10px] text-red-500 mt-4 text-center italic">
+                    * El consumo excesivo de alcohol es dañino para la salud.
+                </p>
+            )}
+        </div>
+    );
+}
