@@ -1,12 +1,18 @@
 import ListaPedidos from "../components/listaPedidos";
 import { pedidos as datosPedidos } from "../data/pedidos"; 
 import NavBar from "../components/navbar";
+import {bazar, decoracion, jugueteria, libreria, destilados} from "../data/productos"
 
 
 export default function PedidosPage({pedidos}) {
+    const todosLosProductos =[...bazar, ...decoracion, ...jugueteria, ...libreria, ...destilados];
+
     return(
         <div className="p-4 border-amber-100 rounded-xl shadow-md mt-4 hover:scale-[1.02] transition-all duration-300">
-             <ListaPedidos pedidos={datosPedidos} />
+             <ListaPedidos 
+             pedidos={[]} 
+             productos={todosLosProductos}
+             />
                 {/* <h2 className="text-2xl font-bold mb-4 text-black/50 text-center">Lista de Pedidos</h2>
             <div className="grid grid-cols-4 gap-4 pb-2 border-b">
                 <h3 className="text-lg font-semibold mb-2 text-black/50">Producto</h3>

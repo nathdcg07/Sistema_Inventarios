@@ -28,7 +28,7 @@ const Navbar = () => {
                         {isOpen && (
                             <div className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-lg shadow-xl py-2 flex flex-col z-50">
                                 <Link href="/" onClick={closeMenu} className="px-4 py-2 hover:bg-gray-600">Home</Link>
-                                <Link href="/pedidos" onClick={closeMenu} className="px-4 py-2 hover:bg-gray-600">Pedidos</Link>
+                                <Link href="/pedido" onClick={closeMenu} className="px-4 py-2 hover:bg-gray-600">Pedidos</Link>
                                 <Link href="/inventarios" onClick={closeMenu} className="px-4 py-2 hover:bg-gray-600">Inventario</Link>
                             </div>
                         )}       

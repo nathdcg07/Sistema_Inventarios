@@ -1,77 +1,109 @@
-export function simularSistema(dias) {
-    let stock = 100;
-    let pedidos = [];
-    let reposicion = null;
+export function simularSistema(productos, dias=30) {
+    if(!Array.isArray(productos)){
+        console.error("Simulador recibió datos inválidos o algo que no es un array", productos);
+        return{ datosGrafico: [], datosTabla: []};
+    }
+
+    // let stock = 100;
+    // let pedidos = [];
+    let reposicionGlobal = null;
     let historial = [];
+    let inventario = productos.map(p=> ({...p, stockInicial:p.stock, estado: p.stock > 0 ? "en_camino" : "sin_stock" }));
 
-    // Aseguramos que 'dias' sea un número válido
-    const totalDias = Number(dias) || 30;
-
-    for (let dia = 1; dia <= totalDias; dia++) {
-        // 1. Simula demandas aleatorias de clientes
+    const listaProductos = Array.isArray(productos) ? productos:[];
+    for (let dia = 1; dia <= dias; dia++) {
+        // 1. Simula cantidad de pedidos del día
         const pedidosHoy = Math.floor(Math.random() * 10) + 5;
+        let demandaDelDia=0;
 
         // 2. Creamos los pedidos del día
         for (let i = 0; i < pedidosHoy; i++) {
-            if (stock > 1) {
-                stock--;
-                pedidos.push({
-                    id: Date.now() + Math.random(), // Evitamos IDs duplicados
-                    estado: "en_camino",
-                    tiempoRestante: Math.floor(Math.random() * 40) + 20
-                });
-            } else if (stock === 1) {
-                stock--;
-                pedidos.push({
-                    id: Date.now() + Math.random(),
-                    estado: "solo_queda_1_unidad",
-                    tiempoRestante: Math.floor(Math.random() * 40) + 20
-                });
-            } else {
-                pedidos.push({
-                    id: Date.now() + Math.random(),
-                    estado: "sin_stock",
-                    tiempoRestante: null
-                });
+            const index = Math.floor(Math.random()*inventario.length);
+            const producto=inventario[index];
+
+            const unidadesPedidas=Math.floor(Math.random()*3)+1;
+            demandaDelDia+=unidadesPedidas;
+
+            // producto.ultimoTiempoEntrega = Math.floor(Math.random()*41)+20;
+
+            if (producto.stock >= unidadesPedidas) {
+                producto.stock -= unidadesPedidas;
+            //     producto.estado=Math.random()>0.5 ? "entregado": "preparando";
+                
+            // } else  {
+            //     producto.estado = "sin_stock";
+                if(Math.random()<0.3){
+                    producto.pedidosEnPreparacion++;
+                }
+            }
+
+            //estados
+            inventario.forEach(p=>{
+                if(p.stock===0){
+                    p.estado="sin_stock";
+                }else if (p.stock===1){
+                    p.estado="solo_queda_1_unidad";
+                }else if(p.pedidosEnPreparacion>0){
+                    p.estado="preparando";
+                    p.pedidosEnPreparacion=0;
+                }else if(p.stock <= p.punto_reposicion){
+                    p.estado="en_camino";
+                }else{
+                    p.estado="entregado";
+                }
+            });
+
+            //alerta de repo
+            if (producto.stock <= producto.punto_reposicion &&
+                 producto.stock >0
+            ){
+                producto.estado = "solo_queda_1_unidad";
+            }
+
+            // if (producto.stock > producto.punto_reposicion){
+            //     producto.estado = "en_camino";
+            // }
+
+            if (producto.stock===0){
+                producto.estado = "sin_stock";
             }
         }
 
-        // 3. ACTUALIZAMOS LOS PEDIDOS EXISTENTES (Fuera del bucle de creación)
-        pedidos = pedidos.map(p => {
-            if (p.estado === "en_camino" || p.estado === "solo_queda_1_unidad") {
-                let nuevoTiempo = p.tiempoRestante - 20;
-                if (nuevoTiempo <= 0) {
-                    return { ...p, estado: "entregado", tiempoRestante: 0 };
-                }
-                return { ...p, tiempoRestante: nuevoTiempo };
-            }
-            return p; // <-- MUY IMPORTANTE: Retornar el pedido intacto si no está en camino
-        });
+        const stockActualTotal = inventario.reduce((acc, p)=>acc+p.stock,0)
 
-        // 4. GESTIÓN DE REPOSICIÓN DE STOCK
-        if (!reposicion && stock < 20) {
-            reposicion = {
-                cantidad: 50,
-                diasRestantes: Math.floor(Math.random() * 3) + 1
+        if(!reposicionGlobal && stockActualTotal < 50){
+            reposicionGlobal={
+                diasRestantes: Math.floor(Math.random()*3)+1,
+                cantidad: 100
             };
         }
-
-        if (reposicion) {
-            reposicion.diasRestantes--;
-            if (reposicion.diasRestantes <= 0) {
-                stock += reposicion.cantidad;
-                reposicion = null;
-            }
+        
+        if(reposicionGlobal){
+            reposicionGlobal.diasRestantes--;
+                if(reposicionGlobal.diasRestantes<=0){
+                    // inventario[0].stock+= reposicionGlobal.cantidad;
+                    inventario.forEach(p=>{if(p.stock===0) p.stock+=20;})
+                    reposicionGlobal=null;
+                }
         }
 
-        // 5. GUARDAMOS EL HISTORIAL DEL DÍA
-        historial.push({
-            dia,
-            stock,
-            pedivosActivos: pedidos.filter(p => p.estado === "en_camino" || p.estado === "solo_queda_1_unidad").length,
-            entregados: pedidos.filter(p => p.estado === "entregado").length
-        });
+
+    historial.push({
+        dia:dia,
+        stock: stockActualTotal,
+        demanda: demandaDelDia
+    });
     }
 
-    return historial; // Retornamos el arreglo completo para la gráfica
+    return{ 
+    datosGrafico: historial,
+    datosTabla: inventario.map(p=>({
+        producto: p.nombre,
+        stockInicial: p.stockInicial,
+        demandaSimulada: p.stockInicial - p.stock,
+        stockFinal: p.stock,
+        estado:p.estado
+    }))
+};
+
 }
