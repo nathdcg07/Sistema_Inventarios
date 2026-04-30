@@ -46,7 +46,7 @@ export default function ListaPedidos({pedidos, onSimular, productos}) {
                 <h3 className="text-lg font-semibold mb-2 text-black/50">Tiempo de Entrega</h3>
             </div> */}
 
-            <div className="mb-12">
+            
             {pedidos?.map((p)=>(
                 <div key={p.id} className="border-b py-2 justify-center grid grid-cols-4 gap-4 rounded-lg border-amber-50 transition-colorsitems-center">
                     {/* <span className="text-gray-500"> {p.producto} </span>
@@ -62,7 +62,6 @@ export default function ListaPedidos({pedidos, onSimular, productos}) {
                     <span className="text-sm text-gray-500"> Tiempo de entrega: {p.tiempoEntrega} </span>
                 </div>
             ))}
-            </div>
 
             
             <div className="mt-8 p-6 hover:scale-[1.02] transition-all duration-300  rounded-lg border-none">

@@ -9,7 +9,22 @@ import {
   decoracion,
   jugueteria,
   libreria,
-  destilados
+  destilados,
+  licores,
+  readyToDrink,
+  vinos,
+  cervezas,
+  aguas,
+  aguasSab,
+  bebDep,
+  gaseosas,
+  jugos,
+  cuidado,
+  papillas,
+  panales,
+  carbones,
+  cerdo,
+  pescados
 } from "../data/productos";
 
 export default function InventariosPage() {
@@ -20,6 +35,21 @@ export default function InventariosPage() {
       jugueteria={jugueteria}
       libreria={libreria}
       destilados={destilados}
+      licores={licores}
+      readyToDrink={readyToDrink}
+      vinos={vinos}
+      cervezas={cervezas}
+      aguas={aguas}
+      aguasSab={aguasSab}
+      bebDep={bebDep}
+      gaseosas={gaseosas}
+      jugos={jugos}
+      cuidado={cuidado}
+      papillas={papillas}
+      panales={panales}
+      carbones={carbones}
+      cerdo={cerdo}
+      pescados={pescados}
     />
   );
 }

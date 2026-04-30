@@ -1,8 +1,10 @@
 "use client"; // 1. Indica que es un componente de cliente
 import { useState, useEffect } from "react"; // 2. Importa el hook useState
-import  guardarProducto  from "../services/productosService";
+import  guardarProducto, { borrarProducto }  from "../services/productosService";
 import { collection, query, onSnapshot } from "firebase/firestore";
 import { db } from "@/app/firebase"; // Asegúrate de tener tu configuración de Firebase aquí
+import { aguas, aguasSab, aperitivos, bebDep, carbones, cerdo, cervezas, cuidado, gaseosas, jugos, licores, panales, papillas, pescados, readyToDrink, vinos } from "../data/productos";
+import { Trash2, Edit, Eraser } from "lucide-react";
 
 export default function Inventario({bazar, decoracion, jugueteria, libreria, destilados}) {
     // 1. PRIMERO declaramos todos los estados
@@ -34,8 +36,31 @@ export default function Inventario({bazar, decoracion, jugueteria, libreria, des
         decoracion: [...decoracion, ...productosFirebase.filter(p => p.categoria === 'decoracion')],
         jugueteria: [...jugueteria, ...productosFirebase.filter(p => p.categoria === 'jugueteria')],
         libreria: [...libreria, ...productosFirebase.filter(p => p.categoria === 'libreria')],
-        destilados: [...destilados, ...productosFirebase.filter(p => p.categoria === 'destilados')]
+        destilados: [...destilados, ...productosFirebase.filter(p => p.categoria === 'destilados')],
+        licores: [...licores, ...productosFirebase.filter(p=>categoria==='licores')],
+        readyToDrink: [...readyToDrink, ...readyToDrink.filter(p=>categoria==='readyToDrink')],
+        vinos:[...vinos, ...vinos.filter(p=>categoria==='vinos')],
+        cervezas:[...cervezas, ...cervezas.filter(p=>categoria==='cervezas')],
+        aguas:[...aguas, ...aguas.filter(p=>categoria==='aguas')],
+        aguasSab: [...aguasSab, ...aguasSab.filter(p=>categoria==='aguasSab')],
+        aperitivos: [...aperitivos, ...aperitivos.filter(p=>categoria==='aperitivos')],
+        bebDep: [...bebDep, ...bebDep.filter(p=>categoria==='bebDep')],
+        gaseosas: [...gaseosas, ...gaseosas.filter(p=>categoria==='gaseosas')],
+        jugos: [...jugos, ...jugos.filter(p=>categoria==='jugos')],
+        cuidado: [...cuidado, ...cuidado.filter(p=>categoria==='cuidado')],
+        papillas: [...papillas, ...papillas.filter(p=>categoria==='papillas')],
+        panales: [...panales, ...panales.filter(p=>categoria==='panales')],
+        carbones: [...carbones, ...carbones.filter(p=>categoria==='carbones')],
+        cerdo: [...cerdo, ...cerdo.filter(p=>categoria==='cerdo')],
+        pescados: [...pescados, ...pescados.filter(p=>categoria==='pescados')]
     };
+
+    const limpiar=()=>{
+        setNombre(" ");
+        setPrecio("Bs");
+        setPunto(" ");
+        setStock(" ");
+     };
 
     console.log(bazar);
     console.log(decoracion);
@@ -55,6 +80,23 @@ export default function Inventario({bazar, decoracion, jugueteria, libreria, des
                     <option value="jugueteria">Juguetería</option>
                     <option value="libreria">Librería</option>
                     <option value="destilados">Destilados</option>
+                    <option value="licores">Licores</option>
+                    <option value="readyToDrink">Ready to Drink</option>
+                    <option value="vinos">Vinos y Espumantes</option>
+                    <option value="cervezas">Cervezas</option>
+                    <option value="aguas">Aguas</option>
+                    <option value="aguasSab">Aguas Saborizadas</option>
+                    <option value="aperitivos">Aperitivos sin alcohol</option>
+                    <option value="bebDep">Bebidas deportivas</option>
+                    <option value="gaseosas">Gaseosas</option>
+                    <option value="jugos">Jugos y Néctares</option>
+                    <option value="cuidado">Cuidado y Aseo</option>
+                    <option value="papillas">Papillas y Cereales</option>
+                    <option value="panales">Pañales y Toallitas</option>
+                    <option value="carbones">Carbones y Leñas</option>
+                    <option value="cerdo">Cerdo</option>
+                    <option value="pescados">Pescados y Mariscos</option>
+
                 </select>
                 <input type="text" value={nombre} onChange={e=>setNombre(e.target.value)} placeholder="Nombre producto..." className="w-full mb-4 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400 text-gray-500"/>
                 <input type="text" value={precio} onChange={e=>setPrecio(e.target.value)}  placeholder="Precio..." className="w-full mb-4 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400 text-gray-500"/>
@@ -73,6 +115,19 @@ export default function Inventario({bazar, decoracion, jugueteria, libreria, des
                 >
                     Guardar producto
                 </button>
+                 <button
+                    onClick={() => {
+                        setNombre("");
+                        setPrecio("Bs ");
+                        setPunto("");
+                        setStock("");
+                    }}
+                    className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition-colors"
+                >
+                    Limpiar
+                </button>
+
+                
 
 
             </div>
@@ -102,6 +157,27 @@ export default function Inventario({bazar, decoracion, jugueteria, libreria, des
                             <span className="text-gray-500">{p.precio}</span>
                             <span className="text-sm text-gray-500"> {p.punto_reposicion} </span>
                             <span className="text-sm text-gray-500"> {p.stock} </span>
+
+                            <div className="flex gap-2 justify-end">
+                                <button
+                                    onClick={()=>{
+                                        setNombre(p.nombre);
+                                        setPrecio(p.precio);
+                                        setPunto(p.punto_reposicion);
+                                        setStock(p.stock);
+                                    }}
+                                    className="p-1 text-cyan-300 hover:bg-violet-400 rounded"
+                                >
+                                    <Edit size={18}/>
+                                </button>
+                                <button 
+                                    onClick={()=>borrarProducto(p.id)}
+                                    className="p-1 text-red-600 hover:bg-red-500 rounded"
+                                >
+                                    <Trash2 size={18}/>
+                                </button>
+                            </div>
+
                         </div>
                     </div>
                 ))}

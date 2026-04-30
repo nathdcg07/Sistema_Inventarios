@@ -1,11 +1,14 @@
 import ListaPedidos from "../components/listaPedidos";
 import { pedidos as datosPedidos } from "../data/pedidos"; 
 import NavBar from "../components/navbar";
-import {bazar, decoracion, jugueteria, libreria, destilados} from "../data/productos"
+import {bazar, decoracion, jugueteria, libreria, destilados, licores, readyToDrink, vinos, cervezas, aguas, aguasSab, aperitivos, bebDep, gaseosas, jugos, cuidado, papillas, panales, carbones, cerdo, pescados} from "../data/productos"
 
 
 export default function PedidosPage({pedidos}) {
-    const todosLosProductos =[...bazar, ...decoracion, ...jugueteria, ...libreria, ...destilados];
+    const todosLosProductos =[...bazar, ...decoracion, ...jugueteria, ...libreria, ...destilados, ...licores, ...readyToDrink, ...vinos,
+        ...cervezas, ...aguas, ...aguasSab, ...aperitivos, ...bebDep, ...gaseosas, ...jugos, ...cuidado, ...papillas,
+        ...panales, ...carbones, ...cerdo, ...pescados
+    ];
 
     return(
         <div className="p-4 border-amber-100 rounded-xl shadow-md mt-4 hover:scale-[1.02] transition-all duration-300">
