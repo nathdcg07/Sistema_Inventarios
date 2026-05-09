@@ -2,8 +2,8 @@ import { db } from "@/app/firebase"
 import { collection, addDoc, doc, updateDoc, deleteDoc, getDocs, query, where } from "firebase/firestore";
 
 // --- CREATE (Guardar con validaciones y duplicados) ---
-export const guardarProducto = async (datos) => {
-    const { nombre, precio, stock, categoria } = datos;
+export const guardarProducto = async (datos, id=null) => {
+    const { nombre, precio } = datos;
 
     // 1. Validación básica
     if (!nombre.trim() || !precio.trim()) {
@@ -13,6 +13,13 @@ export const guardarProducto = async (datos) => {
 
     try {
         const productosRef = collection(db, "productos");
+
+        if(id){
+            const productRef = doc (db, "productos", id);
+            await updateDoc (productRef, datos);
+            alert("Producto Actualizado!");
+            return;
+        }
 
         // 2. Validación de DUPLICADOS
         const q = query(productosRef, where("nombre", "==", nombre.trim()));
@@ -40,7 +47,7 @@ export const actualizarProducto = async (id, nuevosDatos) => {
     try {
         const productoRef = doc(db, "productos", id);
         await updateDoc(productoRef, nuevosDatos);
-        alert("¡Actualizado con éxito!");
+        //alert("¡Actualizado con éxito!");
     } catch (error) {
         console.error("Error al actualizar:", error);
     }

@@ -8,6 +8,7 @@ import { Trash2, Edit, Eraser } from "lucide-react";
 
 export default function Inventario({bazar, decoracion, jugueteria, libreria, destilados}) {
     // 1. PRIMERO declaramos todos los estados
+    const [idEditando, setIdEditando] = useState(null);
     const [categoria, setCategoria] = useState("bazar");
     const [stock, setStock] = useState("");
     const [punto_reposicion, setPunto] = useState("");
@@ -60,6 +61,7 @@ export default function Inventario({bazar, decoracion, jugueteria, libreria, des
         setPrecio("Bs");
         setPunto(" ");
         setStock(" ");
+        setIdEditando(null);
      };
 
     console.log(bazar);
@@ -105,22 +107,20 @@ export default function Inventario({bazar, decoracion, jugueteria, libreria, des
                 
                 <button
                     onClick={() => guardarProducto({
-                        nombre: nombre,
-                        precio: precio,
-                        punto_reposicion: punto_reposicion,
-                        stock: stock,
-                        categoria: categoria
-                    })}
-                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors duration-300 cursor-pointer"
+                        nombre, precio, punto_reposicion, stock, categoria
+                    }, idEditando)} // <-- Le pasamos el ID (será null si es nuevo)
+                    className={`${idEditando ? 'bg-blue-500' : 'bg-green-500'} text-white px-4 py-2 rounded-lg`}
                 >
-                    Guardar producto
+                    {idEditando ? "Actualizar Producto" : "Guardar Producto"}
                 </button>
+
                  <button
                     onClick={() => {
                         setNombre("");
                         setPrecio("Bs ");
                         setPunto("");
                         setStock("");
+                        setIdEditando(null);
                     }}
                     className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition-colors"
                 >
@@ -165,6 +165,7 @@ export default function Inventario({bazar, decoracion, jugueteria, libreria, des
                                         setPrecio(p.precio);
                                         setPunto(p.punto_reposicion);
                                         setStock(p.stock);
+                                        setIdEditando(p.id);
                                     }}
                                     className="p-1 text-cyan-300 hover:bg-violet-400 rounded"
                                 >

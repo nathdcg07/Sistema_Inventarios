@@ -1,5 +1,7 @@
+import { actualizarProducto } from "./productosService";
+
 export function simularSistema(productos, dias=30) {
-    if(!Array.isArray(productos)){
+    if(!Array.isArray(productos) || productos.length === 0){
         console.error("Simulador recibió datos inválidos o algo que no es un array", productos);
         return{ datosGrafico: [], datosTabla: []};
     }
@@ -8,9 +10,12 @@ export function simularSistema(productos, dias=30) {
     // let pedidos = [];
     let reposicionGlobal = null;
     let historial = [];
-    let inventario = productos.map(p=> ({...p, stockInicial:p.stock, estado: p.stock > 0 ? "en_camino" : "sin_stock" }));
+    let inventario = productos.map(p=> ({
+        ...p, 
+        stockInicial:p.stock, 
+        pedidosEnPreparacion: 0,
+        estado: p.stock > 0 ? "en_camino" : "sin_stock" }));
 
-    const listaProductos = Array.isArray(productos) ? productos:[];
     for (let dia = 1; dia <= dias; dia++) {
         // 1. Simula cantidad de pedidos del día
         const pedidosHoy = Math.floor(Math.random() * 10) + 5;
@@ -34,6 +39,8 @@ export function simularSistema(productos, dias=30) {
             //     producto.estado = "sin_stock";
                 if(Math.random()<0.3){
                     producto.pedidosEnPreparacion++;
+                }else{
+                    producto.estado="sin_stock";
                 }
             }
 
@@ -94,6 +101,15 @@ export function simularSistema(productos, dias=30) {
         demanda: demandaDelDia
     });
     }
+
+    // inventario.forEach(async (p)=>{
+    //     if (p.id){
+    //         await actualizarProducto(p.id, {
+    //             stock: p.stock,
+    //             estado: p.estado
+    //         });
+    //     }
+    // });
 
     return{ 
     datosGrafico: historial,

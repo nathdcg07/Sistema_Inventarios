@@ -4,6 +4,7 @@ import Grafico from "../components/grafico"; // 3. Importa el componente Grafico
 import { pedidos } from "../data/pedidos";
 import {simularSistema} from "../services/simulador";
 import Resultados from "../components/resultados";
+import { actualizarProducto } from "../services/productosService";
 
 export default function ListaPedidos({pedidos, onSimular, productos}) {
     // const [stock, setStock] = useState("");
@@ -32,7 +33,34 @@ export default function ListaPedidos({pedidos, onSimular, productos}) {
         if (typeof onSimular === "function") {
             onSimular({ dias:numDias, productos, resultado });
         }
+        
     };
+
+    const handleSincronizarBD = async ()=>{
+            //simula una validacion previa 
+            if(!data || !data.datosTabla || data.datosTabla.length === 0){
+                alert("Primero ejecuta una simulación para tener datos que sincronizar!");
+                return;
+            }
+
+            try{
+                //recorre los datos de nuestra tabla resultante y usamos for para las actualizaciones esten en orden
+                for(const p of data.datosTabla){
+                    const productoOriginal=productos.find(prod => prod.nombre === p.producto);
+
+                    if(productoOriginal && productoOriginal.id){
+                        await actualizarProducto(productoOriginal.id, {
+                            stock: p.stockFinal,
+                            estado: p.estado
+                        });
+                    }
+                }
+                alert("Base de datos sincronizada con los resultados de la simulacion!");
+            }catch (error){
+                console.error("Error! sincronizando:", error);
+                alert("Hubo un problema al sincronizar productos.");
+            }
+        };
 
 
 
@@ -80,6 +108,12 @@ export default function ListaPedidos({pedidos, onSimular, productos}) {
                     className="w-full sm:w-auto mt-4 bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors duration-300 justify-between items-center cursor-pointer"
                 >
                     Ejecutar Simulación
+                </button>
+                <button 
+                    onClick={handleSincronizarBD}
+                    className="w-full sm:w-auto mt-4 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-color duration-300 justify-between items-center cursor-pointer"
+                >
+                    Sincronizar con BD
                 </button>
                 </div>
                 {data &&(

@@ -1,20 +1,39 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { collection, query, onSnapshot } from "firebase/firestore";
+import {db} from "@/app/firebase";
 import ListaPedidos from "../components/listaPedidos";
 import { pedidos as datosPedidos } from "../data/pedidos"; 
-import NavBar from "../components/navbar";
-import {bazar, decoracion, jugueteria, libreria, destilados, licores, readyToDrink, vinos, cervezas, aguas, aguasSab, aperitivos, bebDep, gaseosas, jugos, cuidado, papillas, panales, carbones, cerdo, pescados} from "../data/productos"
 
 
-export default function PedidosPage({pedidos}) {
-    const todosLosProductos =[...bazar, ...decoracion, ...jugueteria, ...libreria, ...destilados, ...licores, ...readyToDrink, ...vinos,
-        ...cervezas, ...aguas, ...aguasSab, ...aperitivos, ...bebDep, ...gaseosas, ...jugos, ...cuidado, ...papillas,
-        ...panales, ...carbones, ...cerdo, ...pescados
-    ];
+export default function PedidosPage() {
+    const [productosFirebase, setProductosFirebase] = useState([]);
+
+    useEffect(()=>{
+        //traemos a todos los productos reales de la nube
+
+        const q = query(collection(db, "productos"));
+        const unsuscribe = onSnapshot(q, (snapshot)=>{
+            const lista = snapshot.docs.map(doc=>({
+                id: doc.id,
+                ...doc.data(),
+
+                //aseguramos que el stock y # de repo sean números
+                stock: Number(doc.data().stock) || 0,
+                punto_reposicion: Number(doc.data().punto_reposicion) || 0,
+            }));
+            setProductosFirebase(lista);
+        });
+        return ()=>unsuscribe();
+    }, []);
+
 
     return(
         <div className="p-4 border-amber-100 rounded-xl shadow-md mt-4 hover:scale-[1.02] transition-all duration-300">
              <ListaPedidos 
-             pedidos={[]} 
-             productos={todosLosProductos}
+             pedidos={datosPedidos} 
+             productos={productosFirebase}
              />
                 {/* <h2 className="text-2xl font-bold mb-4 text-black/50 text-center">Lista de Pedidos</h2>
             <div className="grid grid-cols-4 gap-4 pb-2 border-b">
