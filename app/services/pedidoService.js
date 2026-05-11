@@ -1,11 +1,23 @@
-import { db } from "./firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { db } from "@/app/firebase"
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-export const guardarPedido = async (pedido) => {
+export const guardarSimulacion = async (datosSimulacion) =>{
+    try{
+        await addDoc(collection(db, "simulaciones"),{
+            ...datosSimulacion,
+            fecha: serverTimestamp()
+        });
+    }catch(error){
+        console.error("Error al guardar el resumen: ", error)
+    }
+};
+
+export const guardarPedidoSimulado = async (pedido) => {
     try{
         await addDoc(collection(db, "pedidos"),{
             ...pedido,
-            fecha: new Date()
+            fecha: new serverTimestamp(), //indica la hora del server
+            tipo: "simulado"
         });
 
         console.log("Pedido guardado con éxito");
@@ -14,3 +26,4 @@ export const guardarPedido = async (pedido) => {
         console.error("Error al guardar el pedido: ", error);
     }
 };
+

@@ -21,11 +21,12 @@ export default function Resultados({data}) {
                     <span>{item.stockFinal}</span>
                     <span
                         className={`
-                                font-semibold px-2 py-1 rounded-lg border-none  text-sm items-center justify-center w-max
-                                ${item.estado === "en_camino" ? "text-cyan-500":""}  
-                                ${item.estado === "entregado" ? "text-green-500":""}
-                                ${item.estado === "solo_queda_1_unidad" ? "text-yellow-400":""}
-                                ${item.estado === "sin_stock" ? "text-red-700":""}
+                                font-bold px-2 py-1 rounded-lg border-none text-white text-sm items-center justify-center w-max
+                                ${item.estado === "en_camino" ? "bg-cyan-400":""}  
+                                ${item.estado === "entregado" ? "bg-green-400":""}
+                                ${item.estado === "solo_queda_1_unidad" ? "bg-yellow-300":""}
+                                ${item.estado === "preparando" ? "bg-orange-400": ""}
+                                ${item.estado === "sin_stock" ? "bg-red-600":""}
                                 `}   
                     >{item.estado}</span>
                 </div>

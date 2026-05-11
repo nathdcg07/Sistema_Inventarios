@@ -1,125 +1,93 @@
-import { actualizarProducto } from "./productosService";
+export function simularSistema(productos, dias = 30) {
+    if (!Array.isArray(productos) || productos.length === 0) return { datosGrafico: [], datosTabla: [], metricasGlobales: {} };
 
-export function simularSistema(productos, dias=30) {
-    if(!Array.isArray(productos) || productos.length === 0){
-        console.error("Simulador recibió datos inválidos o algo que no es un array", productos);
-        return{ datosGrafico: [], datosTabla: []};
-    }
-
-    // let stock = 100;
-    // let pedidos = [];
     let reposicionGlobal = null;
     let historial = [];
-    let inventario = productos.map(p=> ({
-        ...p, 
-        stockInicial:p.stock, 
-        pedidosEnPreparacion: 0,
-        estado: p.stock > 0 ? "en_camino" : "sin_stock" }));
+    let inventario = productos.map(p => ({
+        ...p,
+        stockInicial: p.stock,
+        faltantes: 0,
+        completados: 0,
+        pedidosEnPreparacion: 0
+    }));
 
     for (let dia = 1; dia <= dias; dia++) {
-        // 1. Simula cantidad de pedidos del día
         const pedidosHoy = Math.floor(Math.random() * 10) + 5;
-        let demandaDelDia=0;
+        let demandaDelDia = 0;
+        let sumaTiemposEntrega = 0;
 
-        // 2. Creamos los pedidos del día
         for (let i = 0; i < pedidosHoy; i++) {
-            const index = Math.floor(Math.random()*inventario.length);
-            const producto=inventario[index];
+            const index = Math.floor(Math.random() * inventario.length);
+            const producto = inventario[index];
+            const unidadesPedidas = Math.floor(Math.random() * 3) + 1;
+            demandaDelDia += unidadesPedidas;
 
-            const unidadesPedidas=Math.floor(Math.random()*3)+1;
-            demandaDelDia+=unidadesPedidas;
-
-            // producto.ultimoTiempoEntrega = Math.floor(Math.random()*41)+20;
+            const tiempoEntrega = Math.floor(Math.random() * 41) + 20;
+            sumaTiemposEntrega += tiempoEntrega;
 
             if (producto.stock >= unidadesPedidas) {
                 producto.stock -= unidadesPedidas;
-            //     producto.estado=Math.random()>0.5 ? "entregado": "preparando";
-                
-            // } else  {
-            //     producto.estado = "sin_stock";
-                if(Math.random()<0.3){
-                    producto.pedidosEnPreparacion++;
-                }else{
-                    producto.estado="sin_stock";
-                }
+                producto.completados += unidadesPedidas;
+                producto.estado = tiempoEntrega > 50 ? "preparando" : "entregado";
+            } else {
+                producto.faltantes += unidadesPedidas;
+                producto.estado = "sin_stock";
+                producto.esperaReposicion = Math.floor(Math.random() * 3) + 1;
             }
 
-            //estados
-            inventario.forEach(p=>{
-                if(p.stock===0){
-                    p.estado="sin_stock";
-                }else if (p.stock===1){
-                    p.estado="solo_queda_1_unidad";
-                }else if(p.pedidosEnPreparacion>0){
-                    p.estado="preparando";
-                    p.pedidosEnPreparacion=0;
-                }else if(p.stock <= p.punto_reposicion){
-                    p.estado="en_camino";
-                }else{
-                    p.estado="entregado";
-                }
-            });
-
-            //alerta de repo
-            if (producto.stock <= producto.punto_reposicion &&
-                 producto.stock >0
-            ){
+            // Validaciones de alertas críticas inmediatas
+            if (producto.stock > 0 && producto.stock <= producto.punto_reposicion) {
                 producto.estado = "solo_queda_1_unidad";
             }
-
-            // if (producto.stock > producto.punto_reposicion){
-            //     producto.estado = "en_camino";
-            // }
-
-            if (producto.stock===0){
-                producto.estado = "sin_stock";
-            }
+            if (producto.stock === 0) producto.estado = "sin_stock";
         }
 
-        const stockActualTotal = inventario.reduce((acc, p)=>acc+p.stock,0)
+        const stockActualTotal = inventario.reduce((acc, p) => acc + p.stock, 0);
 
-        if(!reposicionGlobal && stockActualTotal < 50){
-            reposicionGlobal={
-                diasRestantes: Math.floor(Math.random()*3)+1,
+        // Reposición
+        if (!reposicionGlobal && stockActualTotal < 50) {
+            reposicionGlobal = {
+                diasRestantes: Math.floor(Math.random() * 3) + 1,
                 cantidad: 100
             };
         }
-        
-        if(reposicionGlobal){
+
+        let mensajeRepo = "";
+        if (reposicionGlobal) {
             reposicionGlobal.diasRestantes--;
-                if(reposicionGlobal.diasRestantes<=0){
-                    // inventario[0].stock+= reposicionGlobal.cantidad;
-                    inventario.forEach(p=>{if(p.stock===0) p.stock+=20;})
-                    reposicionGlobal=null;
-                }
+            mensajeRepo = `Reponiendo (${reposicionGlobal.diasRestantes + 1}d)`;
+            if (reposicionGlobal.diasRestantes <= 0) {
+                inventario.forEach(p => { if (p.stock === 0) p.stock += 20; });
+                reposicionGlobal = null;
+                mensajeRepo = "¡Stock repuesto!";
+            }
         }
 
-
-    historial.push({
-        dia:dia,
-        stock: stockActualTotal,
-        demanda: demandaDelDia
-    });
+        historial.push({
+            dia,
+            stock: stockActualTotal,
+            demanda: demandaDelDia,
+            tiempoEntregaPromedio: Math.floor(sumaTiemposEntrega / pedidosHoy),
+            infoRepo: mensajeRepo
+        });
     }
 
-    // inventario.forEach(async (p)=>{
-    //     if (p.id){
-    //         await actualizarProducto(p.id, {
-    //             stock: p.stock,
-    //             estado: p.estado
-    //         });
-    //     }
-    // });
-
-    return{ 
-    datosGrafico: historial,
-    datosTabla: inventario.map(p=>({
-        producto: p.nombre,
-        stockInicial: p.stockInicial,
-        demandaSimulada: p.stockInicial - p.stock,
-        stockFinal: p.stock,
-        estado:p.estado
-    }))
-};
-
+    return {
+        datosGrafico: historial,
+        datosTabla: inventario.map(p => ({
+            producto: p.nombre,
+            stockInicial: p.stockInicial,
+            demandaSimulada: p.stockInicial - p.stock,
+            stockFinal: p.stock,
+            estado: p.estado,
+            faltantes: p.faltantes,
+            completados: p.completados,
+            esperaReposicion: p.stock <= 0 ? `${p.esperaReposicion || 0} días` : "N/A"
+        })),
+        metricasGlobales: {
+            totalCompletados: inventario.reduce((acc, p) => acc + p.completados, 0),
+            totalFaltantes: inventario.reduce((acc, p) => acc + p.faltantes, 0),
+            tiempoPromedioGral: Math.floor(historial.reduce((acc, h) => acc + h.tiempoEntregaPromedio, 0) / dias)
+        }
+    };
 }

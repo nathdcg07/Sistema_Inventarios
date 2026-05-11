@@ -68,10 +68,10 @@ export default function Inventario({bazar, decoracion, jugueteria, libreria, des
     console.log(decoracion);
     return(
        
-        <div className="p-6 border-amber-100 rounded-xl shadow-md mt-4 hover:scale-[1.02] transition-all duration-300">
+        <div id="formulario-producto" className="p-6 border-amber-100 rounded-xl shadow-md mt-4 hover:scale-[1.02] transition-all duration-300">
            
             <h2 className="text-2xl font-bold mb-4 text-gray-500 text-center">Inventario</h2>
-            <div className="flex justify-center mb-8">
+            <div  className="flex justify-center mb-8">
                 <select 
                     value={categoria} 
                     onChange={(e) => setCategoria(e.target.value)}
@@ -166,6 +166,7 @@ export default function Inventario({bazar, decoracion, jugueteria, libreria, des
                                         setPunto(p.punto_reposicion);
                                         setStock(p.stock);
                                         setIdEditando(p.id);
+                                        document.getElementById('formulario-producto').scrollIntoView({ behavior: 'smooth' });
                                     }}
                                     className="p-1 text-cyan-300 hover:bg-violet-400 rounded"
                                 >
