@@ -70,7 +70,7 @@ export default function ListaPedidos({pedidos, onSimular, productos}) {
 
     return (
         <div className="p-4 border-none">
-            <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4 duration-100">
                     <input
                         type="number"
                         value={dias}
@@ -81,14 +81,14 @@ export default function ListaPedidos({pedidos, onSimular, productos}) {
                     <button
                         onClick={handleSimular}
                         disabled={estaSincronizando}
-                        className="w-full sm:w-auto bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 transition-all font-bold disabled:bg-gray-400"
+                        className="w-full sm:w-auto bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 font-bold disabled:bg-gray-400"
                     >
                         Ejecutar Simulación
                     </button>
                     <button 
                         onClick={handleSincronizarBD}
                         disabled={estaSincronizando}
-                        className="w-full sm:w-auto bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 transition-all font-bold disabled:bg-gray-400"
+                        className="w-full sm:w-auto bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 font-bold disabled:bg-gray-400"
                     >
                         {estaSincronizando ? "Procesando..." : "Sincronizar con BD"}
                     </button>
@@ -96,7 +96,7 @@ export default function ListaPedidos({pedidos, onSimular, productos}) {
 
                 {/* RESULTADOS VISUALES */}
                 {data && !estaSincronizando && (
-                    <div className="space-y-12 mt-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div className="space-y-12 mt-10 animate-in fade-in slide-in-from-bottom-4">
                         <Grafico data={data.datosGrafico} />
 
                         {data?.metricasGlobales && (

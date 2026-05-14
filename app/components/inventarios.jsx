@@ -3,10 +3,10 @@ import { useState, useEffect } from "react"; // 2. Importa el hook useState
 import  guardarProducto, { borrarProducto }  from "../services/productosService";
 import { collection, query, onSnapshot } from "firebase/firestore";
 import { db } from "@/app/firebase"; // Asegúrate de tener tu configuración de Firebase aquí
-import { aguas, aguasSab, aperitivos, bebDep, carbones, cerdo, cervezas, cuidado, gaseosas, jugos, licores, panales, papillas, pescados, readyToDrink, vinos } from "../data/productos";
+import { aguas, aguas_Saborizadas, aperitivos_sin_alcohol, bebidas_Deportivas, carbones, cerdo, cervezas, cuidado, gaseosas, jugos, licores, panales, papillas, pescados, ready_To_Drink, vinos } from "../data/productos";
 import { Trash2, Edit, Eraser } from "lucide-react";
 
-export default function Inventario({bazar, decoracion, jugueteria, libreria, destilados}) {
+export default function Inventario({bazar, jugueteria, libreria, destilados, licores, ready_To_Drink, vinos, cervezas, aguas, aguas_Saborizadas, aperitivos_sin_alcohol, gaseosas, jugos, cuidado, papillas, pañales, carbones, cerdo, pescados}) {
     // 1. PRIMERO declaramos todos los estados
     const [idEditando, setIdEditando] = useState(null);
     const [categoria, setCategoria] = useState("bazar");
@@ -34,26 +34,26 @@ export default function Inventario({bazar, decoracion, jugueteria, libreria, des
     // 3. TERCERO (¡Esto va abajo de todo lo anterior!): Creamos el diccionario de datos
     const datos = {
         bazar: [...bazar, ...productosFirebase.filter(p => p.categoria === 'bazar')],
-        decoracion: [...decoracion, ...productosFirebase.filter(p => p.categoria === 'decoracion')],
+        // decoracion: [...decoracion, ...productosFirebase.filter(p => p.categoria === 'decoracion')],
         jugueteria: [...jugueteria, ...productosFirebase.filter(p => p.categoria === 'jugueteria')],
         libreria: [...libreria, ...productosFirebase.filter(p => p.categoria === 'libreria')],
         destilados: [...destilados, ...productosFirebase.filter(p => p.categoria === 'destilados')],
-        licores: [...licores, ...productosFirebase.filter(p=>categoria==='licores')],
-        readyToDrink: [...readyToDrink, ...readyToDrink.filter(p=>categoria==='readyToDrink')],
-        vinos:[...vinos, ...vinos.filter(p=>categoria==='vinos')],
-        cervezas:[...cervezas, ...cervezas.filter(p=>categoria==='cervezas')],
-        aguas:[...aguas, ...aguas.filter(p=>categoria==='aguas')],
-        aguasSab: [...aguasSab, ...aguasSab.filter(p=>categoria==='aguasSab')],
-        aperitivos: [...aperitivos, ...aperitivos.filter(p=>categoria==='aperitivos')],
-        bebDep: [...bebDep, ...bebDep.filter(p=>categoria==='bebDep')],
-        gaseosas: [...gaseosas, ...gaseosas.filter(p=>categoria==='gaseosas')],
-        jugos: [...jugos, ...jugos.filter(p=>categoria==='jugos')],
-        cuidado: [...cuidado, ...cuidado.filter(p=>categoria==='cuidado')],
-        papillas: [...papillas, ...papillas.filter(p=>categoria==='papillas')],
-        panales: [...panales, ...panales.filter(p=>categoria==='panales')],
-        carbones: [...carbones, ...carbones.filter(p=>categoria==='carbones')],
-        cerdo: [...cerdo, ...cerdo.filter(p=>categoria==='cerdo')],
-        pescados: [...pescados, ...pescados.filter(p=>categoria==='pescados')]
+        licores: [...licores, ...productosFirebase.filter(p =>p.categoria==='licores')],
+        ready_To_Drink: [...ready_To_Drink, ...productosFirebase.filter(p=>p.categoria==='ready_To_Drink')],
+        vinos:[...vinos, ...productosFirebase.filter(p=>p.categoria==='vinos')],
+        cervezas:[...cervezas, ...productosFirebase.filter(p=>p.categoria==='cervezas')],
+        aguas:[...aguas, ...productosFirebase.filter(p=>p.categoria==='aguas')],
+        aguas_Saborizadas: [...aguas_Saborizadas, ...productosFirebase.filter(p=>p.categoria==='aguas_Saborizadas')],
+        aperitivos_sin_alcohol: [...aperitivos_sin_alcohol, ...productosFirebase.filter(p=>p.categoria==='aperitivos_sin_Alcohol')],
+        bebidas_Deportivas: [...bebidas_Deportivas, ...productosFirebase.filter(p=>p.categoria==='bebidas_Deportivas')],
+        gaseosas: [...gaseosas, ...productosFirebase.filter(p=>p.categoria==='gaseosas')],
+        jugos: [...jugos, ...productosFirebase.filter(p=>p.categoria==='jugos')],
+        cuidado: [...cuidado, ...productosFirebase.filter(p=>p.categoria==='cuidado')],
+        papillas: [...papillas, ...productosFirebase.filter(p=>p.categoria==='papillas')],
+        pañales: [...pañales, ...productosFirebase.filter(p=>p.categoria==='pañales')],
+        carbones: [...carbones, ...productosFirebase.filter(p=>p.categoria==='carbones')],
+        cerdo: [...cerdo, ...productosFirebase.filter(p=>p.categoria==='cerdo')],
+        pescados: [...pescados, ...productosFirebase.filter(p=>p.categoria==='pescados')]
     };
 
     const limpiar=()=>{
@@ -64,8 +64,8 @@ export default function Inventario({bazar, decoracion, jugueteria, libreria, des
         setIdEditando(null);
      };
 
-    console.log(bazar);
-    console.log(decoracion);
+    // console.log(bazar);
+    // console.log(decoracion);
     return(
        
         <div id="formulario-producto" className="p-6 border-amber-100 rounded-xl shadow-md mt-4 hover:scale-[1.02] transition-all duration-300">
@@ -78,17 +78,17 @@ export default function Inventario({bazar, decoracion, jugueteria, libreria, des
                     className="w-full mb-4 p-2 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400 bg-white text-gray-700"
                 >
                     <option value="bazar">Bazar</option>
-                    <option value="decoracion">Decoración</option>
+                    {/* <option value="decoracion">Decoración</option> */}
                     <option value="jugueteria">Juguetería</option>
                     <option value="libreria">Librería</option>
                     <option value="destilados">Destilados</option>
                     <option value="licores">Licores</option>
-                    <option value="readyToDrink">Ready to Drink</option>
+                    <option value="ready_To_Drink">Ready to Drink</option>
                     <option value="vinos">Vinos y Espumantes</option>
                     <option value="cervezas">Cervezas</option>
                     <option value="aguas">Aguas</option>
                     <option value="aguasSab">Aguas Saborizadas</option>
-                    <option value="aperitivos">Aperitivos sin alcohol</option>
+                    <option value="aperitivos">Aperitivos sin Alcohol</option>
                     <option value="bebDep">Bebidas deportivas</option>
                     <option value="gaseosas">Gaseosas</option>
                     <option value="jugos">Jugos y Néctares</option>
@@ -185,7 +185,7 @@ export default function Inventario({bazar, decoracion, jugueteria, libreria, des
                 ))}
             </div>
             {/* Nota de salud si es destilados */}
-            {categoria === 'destilados' && (
+            {categoria === 'destilados' && 'licores' &&(
                 <p className="text-[10px] text-red-500 mt-4 text-center italic">
                     * El consumo excesivo de alcohol es dañino para la salud.
                 </p>

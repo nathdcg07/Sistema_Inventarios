@@ -6,17 +6,18 @@ import Inventario from "../components/inventarios";
 
 import {
   bazar,
-  decoracion,
+  // decoracion,
   jugueteria,
   libreria,
   destilados,
   licores,
-  readyToDrink,
+  ready_To_Drink,
   vinos,
   cervezas,
   aguas,
-  aguasSab,
-  bebDep,
+  aguas_Saborizadas,
+  aperitivos_sin_alcohol,
+  bebidas_Deportivas,
   gaseosas,
   jugos,
   cuidado,
@@ -31,22 +32,23 @@ export default function InventariosPage() {
   return (
     <Inventario
       bazar={bazar}
-      decoracion={decoracion}
+      // decoracion={decoracion}
       jugueteria={jugueteria}
       libreria={libreria}
       destilados={destilados}
       licores={licores}
-      readyToDrink={readyToDrink}
+      ready_To_Drink={ready_To_Drink}
       vinos={vinos}
       cervezas={cervezas}
       aguas={aguas}
-      aguasSab={aguasSab}
-      bebDep={bebDep}
+      aguas_Saborizadas={aguas_Saborizadas}
+      aperitivos_sin_alcohol={aperitivos_sin_alcohol}
+      bebidas Deportivas={bebidas_Deportivas}
       gaseosas={gaseosas}
       jugos={jugos}
       cuidado={cuidado}
       papillas={papillas}
-      panales={panales}
+      pañales={panales}
       carbones={carbones}
       cerdo={cerdo}
       pescados={pescados}

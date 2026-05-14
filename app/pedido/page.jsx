@@ -30,7 +30,7 @@ export default function PedidosPage() {
 
 
     return(
-        <div className="p-4 border-amber-100 rounded-xl shadow-md mt-4 hover:scale-[1.02] transition-all duration-300">
+        <div className="p-4 border-amber-100 rounded-xl shadow-md mt-4 hover:scale-[1.02]">
              <ListaPedidos 
              pedidos={datosPedidos} 
              productos={productosFirebase}
