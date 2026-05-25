@@ -22,7 +22,7 @@ import {
   jugos,
   cuidado,
   papillas,
-  panales,
+  pañales,
   carbones,
   cerdo,
   pescados
@@ -48,7 +48,7 @@ export default function InventariosPage() {
       jugos={jugos}
       cuidado={cuidado}
       papillas={papillas}
-      pañales={panales}
+      pañales={pañales}
       carbones={carbones}
       cerdo={cerdo}
       pescados={pescados}

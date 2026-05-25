@@ -9,14 +9,15 @@ import { pedidos as datosPedidos } from "../data/pedidos";
 
 export default function PedidosPage() {
     const [productosFirebase, setProductosFirebase] = useState([]);
+    const [clientesFirebase, setClientesFirebase] = useState([]);
 
     useEffect(()=>{
         //traemos a todos los productos reales de la nube
 
-        const q = query(collection(db, "productos"));
-        const unsuscribe = onSnapshot(q, (snapshot)=>{
+        const qProd = query(collection(db, "productos"));
+        const unsubProd = onSnapshot(qProd, (snapshot)=>{
             const lista = snapshot.docs.map(doc=>({
-                id: doc.id,
+                id: doc.id, 
                 ...doc.data(),
 
                 //aseguramos que el stock y # de repo sean números
@@ -25,8 +26,22 @@ export default function PedidosPage() {
             }));
             setProductosFirebase(lista);
         });
-        return ()=>unsuscribe();
-    }, []);
+
+        const qCli= query(collection(db, "clientes"));
+        const unsubCli = onSnapshot(qCli, (snapshot)=>{
+            const listaCli=snapshot.docs.map(doc=>({
+                id: doc.id,
+                ...doc.data()
+            }));
+            setClientesFirebase(listaCli);
+        }); 
+
+        return()=>{
+            unsubProd();
+            unsubCli();
+        };
+
+    },[]);
 
 
     return(
@@ -34,6 +49,7 @@ export default function PedidosPage() {
              <ListaPedidos 
              pedidos={datosPedidos} 
              productos={productosFirebase}
+             clientes={clientesFirebase}
              />
                 {/* <h2 className="text-2xl font-bold mb-4 text-black/50 text-center">Lista de Pedidos</h2>
             <div className="grid grid-cols-4 gap-4 pb-2 border-b">

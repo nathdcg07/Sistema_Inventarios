@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"; // 2. Importa el hook useState
 import  guardarProducto, { borrarProducto }  from "../services/productosService";
 import { collection, query, onSnapshot } from "firebase/firestore";
 import { db } from "@/app/firebase"; // Asegúrate de tener tu configuración de Firebase aquí
-import { aguas, aguas_Saborizadas, aperitivos_sin_alcohol, bebidas_Deportivas, carbones, cerdo, cervezas, cuidado, gaseosas, jugos, licores, panales, papillas, pescados, ready_To_Drink, vinos } from "../data/productos";
+import { aguas, aguas_Saborizadas, aperitivos_sin_alcohol, bebidas_Deportivas, carbones, cerdo, cervezas, cuidado, gaseosas, jugos, licores, pañales, papillas, pescados, ready_To_Drink, vinos } from "../data/productos";
 import { Trash2, Edit, Eraser } from "lucide-react";
 
 export default function Inventario({bazar, jugueteria, libreria, destilados, licores, ready_To_Drink, vinos, cervezas, aguas, aguas_Saborizadas, aperitivos_sin_alcohol, gaseosas, jugos, cuidado, papillas, pañales, carbones, cerdo, pescados}) {
@@ -68,10 +68,10 @@ export default function Inventario({bazar, jugueteria, libreria, destilados, lic
     // console.log(decoracion);
     return(
        
-        <div id="formulario-producto" className="p-6 border-amber-100 rounded-xl shadow-md mt-4 hover:scale-[1.02] transition-all duration-300">
+        <div id="formulario-producto" className="p-6 border-amber-100 rounded-xl shadow-md mt-4 hover:scale-[1.02]  gap-4 transition-all duration-300">
            
             <h2 className="text-2xl font-bold mb-4 text-gray-500 text-center">Inventario</h2>
-            <div  className="flex justify-center mb-8">
+            <div  className="flex flex-col sm:flex-row justify-center mb-8 gap-4">
                 <select 
                     value={categoria} 
                     onChange={(e) => setCategoria(e.target.value)}
@@ -94,7 +94,7 @@ export default function Inventario({bazar, jugueteria, libreria, destilados, lic
                     <option value="jugos">Jugos y Néctares</option>
                     <option value="cuidado">Cuidado y Aseo</option>
                     <option value="papillas">Papillas y Cereales</option>
-                    <option value="panales">Pañales y Toallitas</option>
+                    <option value="pañales">Pañales y Toallitas</option>
                     <option value="carbones">Carbones y Leñas</option>
                     <option value="cerdo">Cerdo</option>
                     <option value="pescados">Pescados y Mariscos</option>

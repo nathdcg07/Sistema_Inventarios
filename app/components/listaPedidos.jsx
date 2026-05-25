@@ -7,11 +7,10 @@ import Resultados from "../components/resultados";
 import guardarProducto, { actualizarProducto } from "../services/productosService";
 import {guardarSimulacion, guardarPedidoSimulado} from "../services/pedidoService"
 
-export default function ListaPedidos({pedidos, onSimular, productos}) {
+export default function ListaPedidos({pedidos, onSimular, productos, clientes}) {
     // const [stock, setStock] = useState("");
     // const [demanda, setDemanda] = useState("");
     const [dias, setDias] = useState("");
-    // 1. Agrega este estado arriba con los demás
     const [data, setData] = useState([]);
     
     //para la barra de tiempos de entrega y dias repo
@@ -30,12 +29,12 @@ export default function ListaPedidos({pedidos, onSimular, productos}) {
         
         const numDias = Number(dias) || 30;
         // Le pasamos los días que el usuario escribió
-        const resultado = simularSistema(productos,numDias); 
+        const resultado = simularSistema(productos,numDias, clientes); // Asegúrate de pasar también los clientes si el simulador los necesita
         
         // Guardamos los datos simulados aquí para que la gráfica los tome
         setData(resultado); 
         
-        if (typeof onSimular === "function") {
+        if (typeof onSimular === "function") { 
             onSimular({ dias:numDias, productos, resultado });
         }
         
@@ -70,7 +69,7 @@ export default function ListaPedidos({pedidos, onSimular, productos}) {
 
     return (
         <div className="p-4 border-none">
-            <div className="flex flex-col sm:flex-row items-center gap-4 duration-100">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
                     <input
                         type="number"
                         value={dias}
@@ -94,27 +93,36 @@ export default function ListaPedidos({pedidos, onSimular, productos}) {
                     </button>
                 </div>
 
-                {/* RESULTADOS VISUALES */}
-                {data && !estaSincronizando && (
-                    <div className="space-y-12 mt-10 animate-in fade-in slide-in-from-bottom-4">
-                        <Grafico data={data.datosGrafico} />
+                {/* RESULTADOS VISUALES OPTIMIZADOS */}
+                    {data && !estaSincronizando && (
+                        // 1. DEPURE: Quitamos los efectos de hover:scale y transiciones de este div contenedor
+                        <div className="space-y-12 mt-10">
+                            
+                            {/* El Gráfico */}
+                            <Grafico data={data.datosGrafico} />
 
-                        {data?.metricasGlobales && (
-                            <div className="grid grid-cols-2 gap-4 mb-8">
-                                <div className="bg-green-100 p-4 rounded-xl text-center border border-green-200">
-                                    <p className="text-sm text-green-600 font-bold uppercase">Pedidos Completados</p>
-                                    <p className="text-3xl font-black text-green-700">{data.metricasGlobales.totalCompletados}</p>
+                            {/* Las Métricas Globales */}
+                            {data?.metricasGlobales && (
+                                <div className="grid grid-cols-2 gap-4 mb-8">
+                                    <div className="bg-green-100 p-4 rounded-xl text-center border border-green-200">
+                                        <p className="text-sm text-green-600 font-bold uppercase">Pedidos Completados</p>
+                                        <p className="text-3xl font-black text-green-700">{data.metricasGlobales.totalCompletados}</p>
+                                    </div>
+                                    <div className="bg-red-100 p-4 rounded-xl text-center border border-red-200">
+                                        <p className="text-sm text-red-600 font-bold uppercase">Pedidos Faltantes</p>
+                                        <p className="text-3xl font-black text-red-700">{data.metricasGlobales.totalFaltantes}</p>
+                                    </div>
                                 </div>
-                                <div className="bg-red-100 p-4 rounded-xl text-center border border-red-200">
-                                    <p className="text-sm text-red-600 font-bold uppercase">Pedidos Faltantes</p>
-                                    <p className="text-3xl font-black text-red-700">{data.metricasGlobales.totalFaltantes}</p>
-                                </div>
+                            )}
+
+                            {/* 2. DEPURE: Encapsulamos la tabla en un contenedor con scroll propio */}
+                            {/* Esto evita que las miles de filas recarguen el scroll de la ventana principal */}
+                            <div className="max-h-[600px] overflow-y-auto border border-gray-100 rounded-2xl p-2 bg-white shadow-sm">
+                                <Resultados data={data} />
                             </div>
-                        )}
+                        </div>
+                    )}
 
-                        <Resultados data={data.datosTabla} />
-                    </div>
-                )}
             </div>   
     );
 }
